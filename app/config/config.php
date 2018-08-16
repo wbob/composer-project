@@ -3,12 +3,18 @@
 $db = false;
 if (getenv('DATABASE_URL')) {
     $db = parse_url(getenv('DATABASE_URL'));
+} elseif (getenv('DATABASE_URL_SECRET') {
+    $db = parse_url(base64_decode(file_get_contents(getenv('DATABASE_URL_SECRET'))));
 }
 
 // Fallback if e.g. the password contains URL invalid parameters
 if (!$db) {
     $db['user'] = getenv('DB_USERNAME');
-    $db['pass'] = getenv('DB_PASSWORD');
+    if (getenv('DB_PASSWORD_SECRET') {
+        $db['pass'] = base64_decode(file_get_contents(getenv('DB_PASSWORD_SECRET')));
+    } else {
+        $db['pass'] = getenv('DB_PASSWORD');
+    }
     $db['path'] = '/' . getenv('DB_DATABASE');
     $db['host'] = getenv('DB_HOST');
     $db['port'] = getenv('DB_PORT');
